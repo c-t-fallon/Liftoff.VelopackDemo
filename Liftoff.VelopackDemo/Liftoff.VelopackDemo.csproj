@@ -8,4 +8,25 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<StartupObject>Liftoff.VelopackDemo.App</StartupObject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ApplicationDefinition Remove="App.xaml" />
+		<Page Include="App.xaml" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="0.0.1298" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Corey.t.fallon\source\repos\Liftoff.VelopackDemo\Liftoff.VelopackDemo\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Corey.t.fallon\source\repos\Liftoff.VelopackDemo\Liftoff.VelopackDemo\.editorconfig" />
+  </ItemGroup>
+
 </Project>
