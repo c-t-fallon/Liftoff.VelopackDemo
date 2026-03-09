@@ -1,3 +1,6 @@
+permissions:
+  contents: write
+
 name: .NET Core Desktop
 
 on:
@@ -31,3 +34,10 @@ jobs:
 
     - name: Publish Application
       run: dotnet publish Liftoff.VelopackDemo/Liftoff.VelopackDemo.csproj -c Release -o publish -r win-x64 --self-contained true
+
+    - name: Create Velopack Release
+      run: |
+        dotnet tool install -g vpk
+        vpk download github --repoUrl https://github.com/${{ github.repository }}
+        vpk pack -u MyUniqueIdentifier -v ${{ steps.get-version.outputs.version }} -p publish
+        vpk upload github --repoUrl https://github.com/${{ github.repository }} --publish --releaseName "MyProject ${{ steps.get-version.outputs.version }}" --tag v${{ steps.get-version.outputs.version }}
