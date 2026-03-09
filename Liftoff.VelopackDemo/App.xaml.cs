@@ -13,5 +13,10 @@ namespace Liftoff.VelopackDemo
             app.InitializeComponent();
             app.Run();
         }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+        }
     }
 }
