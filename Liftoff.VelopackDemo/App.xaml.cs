@@ -8,6 +8,10 @@ namespace Liftoff.VelopackDemo
 {
     public partial class App : Application
     {
+        public static string SyncfusionLicenseKeyEnvironmentVariable { get; set; }
+
+        public static string SyncfusionLicenseKeyUserSecretsKey { get; set; }
+
         [STAThread]
         private static void Main(string[] args)
         {
@@ -16,6 +20,9 @@ namespace Liftoff.VelopackDemo
             var config = new ConfigurationBuilder()
                 .AddUserSecrets<App>()
                 .Build();
+
+            SyncfusionLicenseKeyEnvironmentVariable = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY");
+            SyncfusionLicenseKeyUserSecretsKey = config["Syncfusion:LicenseKey"];
 
             var syncfusionLicenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY") ?? config["Syncfusion:LicenseKey"];
             SyncfusionLicenseProvider.RegisterLicense(syncfusionLicenseKey);
