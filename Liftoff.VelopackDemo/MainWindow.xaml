@@ -13,7 +13,7 @@
         <Label
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Content="Hello, world v2"
+            Content="Hello, world v3"
             FontSize="24"/>
     </Grid>
 </Window>
