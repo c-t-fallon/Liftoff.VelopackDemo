@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	  <RootNamespace>Liftoff.VelopackDemo</RootNamespace>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -18,6 +19,7 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.100" />
     <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
@@ -27,6 +29,16 @@
 
   <ItemGroup>
     <None Include="C:\Users\Corey.t.fallon\source\repos\Liftoff.VelopackDemo\Liftoff.VelopackDemo\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\css\bootstrap\" />
   </ItemGroup>
 
 </Project>
