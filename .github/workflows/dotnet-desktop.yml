@@ -44,7 +44,7 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Publish Application
-      run: dotnet publish Liftoff.VelopackDemo/Liftoff.VelopackDemo.csproj -c Release -o publish -r win-x64 --self-contained true
+      run: dotnet publish Liftoff.VelopackDemo/Liftoff.VelopackDemo.csproj -c Release -o publish -r win-x64 --self-contained true -p:SYNCFUSION_LICENSE_KEY="${{ secrets.SYNCFUSION_LICENSE_KEY }}"
 
     - name: Create Velopack Release
       run: |
