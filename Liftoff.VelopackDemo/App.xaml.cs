@@ -17,7 +17,10 @@ namespace Liftoff.VelopackDemo
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+#if !DEBUG
             await UpdateMyApp();
+#endif 
+
             base.OnStartup(e);
         }
 
