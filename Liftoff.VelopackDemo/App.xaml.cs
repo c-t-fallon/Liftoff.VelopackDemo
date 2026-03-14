@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Microsoft.Extensions.Configuration;
+using Syncfusion.Licensing;
+using System.Windows;
 using Velopack;
 using Velopack.Sources;
 
@@ -10,6 +12,14 @@ namespace Liftoff.VelopackDemo
         private static void Main(string[] args)
         {
             VelopackApp.Build().Run();
+
+            var config = new ConfigurationBuilder()
+                .AddUserSecrets<App>()
+                .Build();
+
+            var syncfusionLicenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY") ?? config["Syncfusion:LicenseKey"];
+            SyncfusionLicenseProvider.RegisterLicense(syncfusionLicenseKey);
+
             App app = new();
             app.InitializeComponent();
             app.Run();

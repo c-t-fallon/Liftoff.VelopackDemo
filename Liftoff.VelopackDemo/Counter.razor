@@ -1,14 +1,20 @@
-﻿<h1>Counter</h1>
-
-<p>Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+﻿<SfGrid DataSource="@Orders" />
 
 @code {
-    private int currentCount = 0;
+    public List<Order> Orders { get; set; }
 
-    private void IncrementCount()
+    protected override void OnInitialized()
     {
-        currentCount++;
+        Orders = Enumerable.Range(1, 5).Select(x => new Order()
+        {
+            OrderID = 0 + x,
+            CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)],
+        }).ToList();
+    }
+
+    public class Order
+    {
+        public int? OrderID { get; set; }
+        public string CustomerID { get; set; }
     }
 }

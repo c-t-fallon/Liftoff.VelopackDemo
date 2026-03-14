@@ -11,6 +11,7 @@
 
 	<PropertyGroup>
 		<StartupObject>Liftoff.VelopackDemo.App</StartupObject>
+		<UserSecretsId>f9ef123e-1066-4288-98e6-e79017f51f8b</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,6 +21,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.100" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="32.2.9" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="32.2.9" />
     <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.DependencyInjection;
+using Syncfusion.Blazor;
 using System.Windows;
 
 namespace Liftoff.VelopackDemo
@@ -12,6 +13,7 @@ namespace Liftoff.VelopackDemo
 
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddWpfBlazorWebView();
+            serviceCollection.AddSyncfusionBlazor();
             Resources.Add("services", serviceCollection.BuildServiceProvider());
 
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
