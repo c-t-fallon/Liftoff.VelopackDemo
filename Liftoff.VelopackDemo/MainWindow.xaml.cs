@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.WebView;
+﻿using Liftoff.VelopackDemo.Layout;
+using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.DependencyInjection;
 using Syncfusion.Blazor;
 using System.Windows;
@@ -14,6 +15,7 @@ namespace Liftoff.VelopackDemo
             var services = new ServiceCollection();
             services.AddWpfBlazorWebView();
             services.AddSyncfusionBlazor();
+            services.AddApplicationServices();
             Resources.Add("services", services.BuildServiceProvider());
 
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
@@ -30,6 +32,7 @@ namespace Liftoff.VelopackDemo
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddSingleton<NavMenuViewModel>();
             return services;
         }
     }
