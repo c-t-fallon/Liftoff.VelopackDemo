@@ -24,15 +24,5 @@ namespace Liftoff.VelopackDemo
             app.InitializeComponent();
             app.Run();
         }
-
-        protected override async void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-        }
-
-        private static async Task UpdateMyApp()
-        {
-            var mgr = new UpdateManager(new GithubSource("https://github.com/c-t-fallon/Liftoff.VelopackDemo", null, false));
-        }
     }
 }

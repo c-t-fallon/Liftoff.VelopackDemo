@@ -42,7 +42,7 @@ namespace Liftoff.VelopackDemo.Services.Update
     {
         public async Task<bool> CheckForUpdateAsync()
         {
-            return true;
+            return false;
         }
 
         public async Task UpdateApplicationAsync()
