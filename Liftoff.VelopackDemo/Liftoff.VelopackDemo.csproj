@@ -45,13 +45,14 @@
     <Folder Include="wwwroot\css\bootstrap\" />
   </ItemGroup>
 
+	<PropertyGroup>
+		<SYNCFUSION_LICENSE_KEY>TEST</SYNCFUSION_LICENSE_KEY>
+	</PropertyGroup>
+
 	<Target Name="InjectLicenseKey" BeforeTargets="BeforeBuild" Condition="'$(SYNCFUSION_LICENSE_KEY)' != ''">
-		<WriteLinesToFile
-		  File="$(IntermediateOutputPath)LicenseKey.cs"
-		  Lines="namespace Liftoff.VelopackDemo; internal static partial class BuildConstants { internal const string SYNCFUSION_LICENSE_KEY = &quot;$(SYNCFUSION_LICENSE_KEY)&quot;; }"
-		  Overwrite="true" />
+		<WriteLinesToFile File="$(IntermediateOutputPath)LicenseKey.g.cs" Lines="namespace Liftoff.VelopackDemo%3B internal static partial class BuildConstants { internal const string SYNCFUSION_LICENSE_KEY = &quot;$(SYNCFUSION_LICENSE_KEY)&quot;%3B }" Overwrite="true" />
 		<ItemGroup>
-			<Compile Include="$(IntermediateOutputPath)LicenseKey.cs" />
+			<Compile Include="$(IntermediateOutputPath)LicenseKey.g.cs" />
 		</ItemGroup>
 	</Target>
 
