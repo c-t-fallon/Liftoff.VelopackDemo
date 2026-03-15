@@ -1,8 +1,6 @@
-﻿@inject NavMenuViewModel ViewModel
-
-<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">@ViewModel.Version</a>
+        <a class="navbar-brand" href="">@version</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -21,10 +19,17 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="checkforupdate">
+                <span class="bi bi-table-nav-menu" aria-hidden="true"></span> Check for Update
+            </NavLink>
+        </div>
     </nav>
 </div>
 
 @code {
+    private string version => $"v{GetType().Assembly.GetName().Version}";
+
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;

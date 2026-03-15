@@ -27,28 +27,12 @@ namespace Liftoff.VelopackDemo
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-#if !DEBUG
-            await UpdateMyApp();
-#endif 
-
             base.OnStartup(e);
         }
 
         private static async Task UpdateMyApp()
         {
             var mgr = new UpdateManager(new GithubSource("https://github.com/c-t-fallon/Liftoff.VelopackDemo", null, false));
-
-            var newVersion = await mgr.CheckForUpdatesAsync();
-            if (newVersion == null)
-            {
-                return;
-            }
-
-            // download new version
-            await mgr.DownloadUpdatesAsync(newVersion);
-
-            // install new version and restart app
-            mgr.ApplyUpdatesAndRestart(newVersion);
         }
     }
 }

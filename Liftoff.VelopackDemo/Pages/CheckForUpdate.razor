@@ -1,0 +1,30 @@
+﻿@page "/checkforupdate"
+@using Liftoff.VelopackDemo.Services.Update
+
+@inject IUpdateService update
+
+<h3>CheckForUpdate</h3>
+
+@if (isUpdateAvailable)
+{
+    <p>A new update is available!</p>
+    <button @onclick="UpdateApplication">Update</button>
+}
+else
+{
+    <p>You are using the latest version.</p>
+}
+
+@code {
+    private bool isUpdateAvailable = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isUpdateAvailable = await update.CheckForUpdateAsync();
+    }
+
+    private async Task UpdateApplication()
+    {
+        await update.UpdateApplicationAsync();
+    }
+}
