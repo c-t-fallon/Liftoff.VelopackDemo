@@ -14,7 +14,7 @@
         }).ToList();
 
 
-        if (string.IsNullOrEmpty(App.SyncfusionLicenseKeyEnvironmentVariable))
+        if (string.IsNullOrEmpty(App.SyncfusionLicenseKeyBuildConstant))
         {
             JS.InvokeVoidAsync("console.log", "env var is empty");
         }
