@@ -11,10 +11,10 @@ namespace Liftoff.VelopackDemo
         {
             InitializeComponent();
 
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddWpfBlazorWebView();
-            serviceCollection.AddSyncfusionBlazor();
-            Resources.Add("services", serviceCollection.BuildServiceProvider());
+            var services = new ServiceCollection();
+            services.AddWpfBlazorWebView();
+            services.AddSyncfusionBlazor();
+            Resources.Add("services", services.BuildServiceProvider());
 
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
         }
@@ -23,6 +23,14 @@ namespace Liftoff.VelopackDemo
         {
             e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
             e.WebView.CoreWebView2.Settings.AreDevToolsEnabled = true;
+        }
+    }
+
+    public static class IServiceCollectionExtensions
+    {
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            return services;
         }
     }
 }
