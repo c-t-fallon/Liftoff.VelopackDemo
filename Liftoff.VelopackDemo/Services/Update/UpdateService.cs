@@ -13,7 +13,7 @@ namespace Liftoff.VelopackDemo.Services.Update
     {
         event EventHandler? DownloadStarted;
 
-        event EventHandler? DownloadProgressChanged;
+        event EventHandler<DownloadProgressChangedEventArgs>? DownloadProgressChanged;
 
         event EventHandler? DownloadCompleted;
 
@@ -26,7 +26,7 @@ namespace Liftoff.VelopackDemo.Services.Update
     {
         public event EventHandler? DownloadStarted;
 
-        public event EventHandler? DownloadProgressChanged;
+        public event EventHandler<DownloadProgressChangedEventArgs>? DownloadProgressChanged;
 
         public event EventHandler? DownloadCompleted;
 
@@ -41,7 +41,10 @@ namespace Liftoff.VelopackDemo.Services.Update
             var newVersion = await updateManager.CheckForUpdatesAsync();
 
             DownloadStarted?.Invoke(this, null);
-            await updateManager.DownloadUpdatesAsync(newVersion);
+            await updateManager.DownloadUpdatesAsync(newVersion, progress =>
+            {
+                DownloadProgressChanged?.Invoke(this, new DownloadProgressChangedEventArgs() { PercentComplete = progress });
+            });
             DownloadCompleted?.Invoke(this, null);
         }
 
@@ -52,11 +55,16 @@ namespace Liftoff.VelopackDemo.Services.Update
         }
     }
 
+    public class DownloadProgressChangedEventArgs : EventArgs
+    {
+        public int PercentComplete { get; set; }
+    }
+
     public class FakeUpdateService : IUpdateService
     {
         public event EventHandler? DownloadStarted;
 
-        public event EventHandler? DownloadProgressChanged;
+        public event EventHandler<DownloadProgressChangedEventArgs>? DownloadProgressChanged;
 
         public event EventHandler? DownloadCompleted;
 
@@ -71,7 +79,7 @@ namespace Liftoff.VelopackDemo.Services.Update
 
             for (int i = 0; i < 100; i++)
             {
-                DownloadProgressChanged?.Invoke(this, null);
+                DownloadProgressChanged?.Invoke(this, new DownloadProgressChangedEventArgs { PercentComplete = i + 1 });
                 await Task.Delay(50);
             }
             
