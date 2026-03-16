@@ -9,6 +9,7 @@
 {
     <p>A new update is available!</p>
     <button @onclick="UpdateApplication">Update</button>
+    <p>@downloadStatus</p>
 }
 else
 {
@@ -18,13 +19,28 @@ else
 @code {
     private bool isUpdateAvailable = false;
 
+    private string downloadStatus;
+
     protected override async Task OnInitializedAsync()
     {
+        update.DownloadStarted += IUpdateService_DownloadStarted;
+        update.DownloadCompleted += IUpdateService_DownloadCompleted;
+
         isUpdateAvailable = await update.CheckForUpdateAsync();
     }
 
     private async Task UpdateApplication()
     {
         await update.UpdateApplicationAsync();
+    }
+
+    private void IUpdateService_DownloadStarted(object? sender, EventArgs e)
+    {
+        downloadStatus = "Download started";
+    }
+
+    private void IUpdateService_DownloadCompleted(object? sender, EventArgs e)
+    {
+        downloadStatus = "Download finished";
     }
 }
