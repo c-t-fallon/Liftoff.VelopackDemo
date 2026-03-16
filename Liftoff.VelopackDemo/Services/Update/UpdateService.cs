@@ -28,7 +28,6 @@ namespace Liftoff.VelopackDemo.Services.Update
             var updateManager = GetUpdateManager();
             var newVersion = await updateManager.CheckForUpdatesAsync();
             await updateManager.DownloadUpdatesAsync(newVersion);
-            updateManager.ApplyUpdatesAndRestart(newVersion);
         }
 
         private UpdateManager GetUpdateManager()
