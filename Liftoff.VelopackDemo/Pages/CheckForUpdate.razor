@@ -35,21 +35,30 @@ else
         await update.UpdateApplicationAsync();
     }
 
-    private void IUpdateService_DownloadStarted(object? sender, EventArgs e)
+    private async void IUpdateService_DownloadStarted(object? sender, EventArgs e)
     {
-        downloadStatus = "Download started";
-        StateHasChanged();
+        await InvokeAsync(() =>
+        {
+            downloadStatus = "Download started";
+            StateHasChanged();
+        });
     }
 
-    private void IUpdateService_DownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
+    private async void IUpdateService_DownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
     {
-        downloadStatus = $"Download progress: {e.PercentComplete}%";
-        StateHasChanged();
+        await InvokeAsync(() =>
+        {
+            downloadStatus = $"Download progress: {e.PercentComplete}%";
+            StateHasChanged();
+        });
     }
 
-    private void IUpdateService_DownloadCompleted(object? sender, EventArgs e)
+    private async void IUpdateService_DownloadCompleted(object? sender, EventArgs e)
     {
-        downloadStatus = "Download finished";
-        StateHasChanged();
+        await InvokeAsync(() =>
+        {
+            downloadStatus = "Download finished";
+            StateHasChanged();
+        });
     }
 }
