@@ -17,35 +17,50 @@ namespace Liftoff.VelopackDemo.Services.Update
 
         event EventHandler? DownloadCompleted;
 
-        Task<bool> CheckForUpdateAsync();
+        Task CheckForUpdatesAndDownloadAsync();
 
-        Task UpdateApplicationAsync();
+        bool IsUpdateAvailable();
+
+        Task WaitExitThenApplyUpdatesAsync();
     }
 
     public class UpdateService : IUpdateService
     {
+        private UpdateManager updateManager;
+        private UpdateInfo newVersion;
+
         public event EventHandler? DownloadStarted;
 
         public event EventHandler<DownloadProgressChangedEventArgs>? DownloadProgressChanged;
 
         public event EventHandler? DownloadCompleted;
 
-        public async Task<bool> CheckForUpdateAsync()
+        public async Task CheckForUpdatesAndDownloadAsync()
         {
-            return await GetUpdateManager().CheckForUpdatesAsync() != null;
+            updateManager = GetUpdateManager();
+            newVersion = await updateManager.CheckForUpdatesAsync();
+
+            if (newVersion == null)
+            {
+                return;
+            }
+
+            await updateManager.DownloadUpdatesAsync(newVersion);
         }
 
-        public async Task UpdateApplicationAsync()
+        public bool IsUpdateAvailable()
         {
-            var updateManager = GetUpdateManager();
-            var newVersion = await updateManager.CheckForUpdatesAsync();
+            return newVersion != null;
+        }
 
-            DownloadStarted?.Invoke(this, null);
-            await updateManager.DownloadUpdatesAsync(newVersion, progress =>
+        public async Task WaitExitThenApplyUpdatesAsync()
+        {
+            if (newVersion == null)
             {
-                DownloadProgressChanged?.Invoke(this, new DownloadProgressChangedEventArgs() { PercentComplete = progress });
-            });
-            DownloadCompleted?.Invoke(this, null);
+                return;
+            }
+
+            await updateManager.WaitExitThenApplyUpdatesAsync(newVersion);
         }
 
         private UpdateManager GetUpdateManager()
@@ -68,22 +83,17 @@ namespace Liftoff.VelopackDemo.Services.Update
 
         public event EventHandler? DownloadCompleted;
 
-        public async Task<bool> CheckForUpdateAsync()
+        public async Task CheckForUpdatesAndDownloadAsync()
+        {
+        }
+
+        public bool IsUpdateAvailable()
         {
             return true;
         }
 
-        public async Task UpdateApplicationAsync()
+        public async Task WaitExitThenApplyUpdatesAsync()
         {
-            DownloadStarted?.Invoke(this, null);
-
-            for (int i = 0; i < 100; i++)
-            {
-                DownloadProgressChanged?.Invoke(this, new DownloadProgressChangedEventArgs { PercentComplete = i + 1 });
-                await Task.Delay(50);
-            }
-            
-            DownloadCompleted?.Invoke(this, null);
         }
     }
 }

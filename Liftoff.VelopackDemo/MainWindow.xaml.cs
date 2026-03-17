@@ -3,12 +3,17 @@ using Liftoff.VelopackDemo.Services.Update;
 using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.Extensions.DependencyInjection;
 using Syncfusion.Blazor;
+using System;
+using System.ComponentModel;
 using System.Windows;
 
 namespace Liftoff.VelopackDemo
 {
     public partial class MainWindow : Window
     {
+        IServiceProvider serviceProvider;
+        IUpdateService updateService;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -17,8 +22,10 @@ namespace Liftoff.VelopackDemo
             services.AddWpfBlazorWebView();
             services.AddSyncfusionBlazor();
             services.AddApplicationServices();
-            var serviceProvider = services.BuildServiceProvider();
+            serviceProvider = services.BuildServiceProvider();
             Resources.Add("services", serviceProvider);
+
+            updateService = serviceProvider.GetRequiredService<IUpdateService>();
 
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
         }
@@ -27,6 +34,16 @@ namespace Liftoff.VelopackDemo
         {
             e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = true;
             e.WebView.CoreWebView2.Settings.AreDevToolsEnabled = true;
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await updateService.CheckForUpdatesAndDownloadAsync();
+        }
+
+        private async void Window_Closing(object sender, CancelEventArgs e)
+        {
+            await updateService.WaitExitThenApplyUpdatesAsync();
         }
     }
 

@@ -27,12 +27,11 @@ else
         update.DownloadProgressChanged += IUpdateService_DownloadProgressChanged;
         update.DownloadCompleted += IUpdateService_DownloadCompleted;
 
-        isUpdateAvailable = await update.CheckForUpdateAsync();
+        isUpdateAvailable = update.IsUpdateAvailable();
     }
 
     private async Task UpdateApplication()
     {
-        await update.UpdateApplicationAsync();
     }
 
     private async void IUpdateService_DownloadStarted(object? sender, EventArgs e)
