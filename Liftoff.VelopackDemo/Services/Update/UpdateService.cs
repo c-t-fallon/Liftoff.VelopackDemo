@@ -60,7 +60,7 @@ namespace Liftoff.VelopackDemo.Services.Update
                 return;
             }
 
-            await updateManager.WaitExitThenApplyUpdatesAsync(newVersion);
+            await updateManager.WaitExitThenApplyUpdatesAsync(newVersion, true, false);
         }
 
         private UpdateManager GetUpdateManager()
