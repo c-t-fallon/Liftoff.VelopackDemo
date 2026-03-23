@@ -11,21 +11,15 @@ namespace Liftoff.VelopackDemo
 {
     public partial class MainWindow : Window
     {
-        IServiceProvider serviceProvider;
-        IUpdateService updateService;
+        IUpdateService _updateService;
 
-        public MainWindow()
+        public MainWindow(IUpdateService updateService)
         {
+            _updateService = updateService;
+
             InitializeComponent();
 
-            var services = new ServiceCollection();
-            services.AddWpfBlazorWebView();
-            services.AddSyncfusionBlazor();
-            services.AddApplicationServices();
-            serviceProvider = services.BuildServiceProvider();
-            Resources.Add("services", serviceProvider);
-
-            updateService = serviceProvider.GetRequiredService<IUpdateService>();
+            Resources.Add("services", App.Host.Services);
 
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
         }
@@ -38,25 +32,12 @@ namespace Liftoff.VelopackDemo
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await updateService.CheckForUpdatesAndDownloadAsync();
+            await _updateService.CheckForUpdatesAndDownloadAsync();
         }
 
         private async void Window_Closing(object sender, CancelEventArgs e)
         {
-            await updateService.WaitExitThenApplyUpdatesAsync();
-        }
-    }
-
-    public static class IServiceCollectionExtensions
-    {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-        {
-#if !DEBUG
-            services.AddSingleton<IUpdateService, UpdateService>();
-#else 
-            services.AddSingleton<IUpdateService, FakeUpdateService>();
-#endif
-            return services;
+            await _updateService.WaitExitThenApplyUpdatesAsync();
         }
     }
 }

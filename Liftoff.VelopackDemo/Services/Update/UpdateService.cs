@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,14 @@ namespace Liftoff.VelopackDemo.Services.Update
 
         bool IsUpdateAvailable();
 
+        void UpdateAndRestart();
+
+        void UpdateAndExit();
+
         Task WaitExitThenApplyUpdatesAsync();
     }
 
-    public class UpdateService : IUpdateService
+    public class UpdateService(ILogger<UpdateService> logger) : IUpdateService
     {
         private UpdateManager updateManager;
         private UpdateInfo newVersion;
@@ -51,6 +56,28 @@ namespace Liftoff.VelopackDemo.Services.Update
         public bool IsUpdateAvailable()
         {
             return newVersion != null;
+        }
+
+        public void UpdateAndRestart()
+        {
+            if (newVersion == null)
+            {
+                return;
+            }
+
+            updateManager.ApplyUpdatesAndRestart(newVersion);
+            logger.LogInformation("Update applied, restarting application.");
+        }
+
+        public void UpdateAndExit()
+        {
+            if (newVersion == null)
+            {
+                return;
+            }
+
+            updateManager.ApplyUpdatesAndExit(newVersion);
+            logger.LogInformation("Update applied, exiting application.");
         }
 
         public async Task WaitExitThenApplyUpdatesAsync()
@@ -90,6 +117,14 @@ namespace Liftoff.VelopackDemo.Services.Update
         public bool IsUpdateAvailable()
         {
             return true;
+        }
+
+        public void UpdateAndRestart()
+        {
+        }
+
+        public void UpdateAndExit()
+        {
         }
 
         public async Task WaitExitThenApplyUpdatesAsync()

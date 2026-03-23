@@ -1,4 +1,8 @@
 ﻿@inherits LayoutComponentBase
+
+@inject IUpdateService _update
+@inject TelemetryClient _telemetry;
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,11 +10,11 @@
 
     <main>
         <div class="top-row px-4">
-            <SfDropDownButton Content="Update">
+            <SfDropDownButton IconCss="bi bi-arrow-up-circle" Content="Update" CssClass="e-info">
                 <DropDownMenuItems>
-                    <DropDownMenuItem Text="Update and Restart"></DropDownMenuItem>
-                    <DropDownMenuItem Text="Update and Exit"></DropDownMenuItem>
-                    <DropDownMenuItem Text="Details"></DropDownMenuItem>
+                    <DropDownMenuItem IconCss="bi bi-arrow-clockwise" Text="Update and Restart" onclick="@UpdateAndRestart"></DropDownMenuItem>
+                    <DropDownMenuItem IconCss="bi bi-box-arrow-right" Text="Update and Exit" onclick="@UpdateAndExit"></DropDownMenuItem>
+                    <DropDownMenuItem IconCss="bi bi-info-circle" Text="Details"></DropDownMenuItem>
                 </DropDownMenuItems>
             </SfDropDownButton>
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
@@ -21,3 +25,17 @@
         </article>
     </main>
 </div>
+
+@code {
+    void UpdateAndRestart()
+    {
+        _update.UpdateAndRestart();
+        _telemetry.TrackEvent("UpdateAndRestartClicked");
+    }
+
+    void UpdateAndExit()
+    {
+        _update.UpdateAndExit();
+        _telemetry.TrackEvent("UpdateAndExitClicked");
+    }
+}
