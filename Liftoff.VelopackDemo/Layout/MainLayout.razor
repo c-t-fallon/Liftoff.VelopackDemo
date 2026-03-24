@@ -13,9 +13,10 @@
             @if (_update.IsUpdateAvailable())
             {
                 <SfDropDownButton IconCss="bi bi-arrow-up-circle" Content="Update" CssClass="e-info">
+                    <DropDownButtonEvents ItemSelected="ItemSelected" />
                     <DropDownMenuItems>
-                        <DropDownMenuItem IconCss="bi bi-arrow-clockwise" Text="Update and Restart" onclick="@(() => UpdateAndRestart())"></DropDownMenuItem>
-                        <DropDownMenuItem IconCss="bi bi-box-arrow-right" Text="Update and Exit" onclick="@(() => UpdateAndExit())"></DropDownMenuItem>
+                        <DropDownMenuItem @ref="updateAndRestartItem" IconCss="bi bi-arrow-clockwise" Text="Update and Restart"></DropDownMenuItem>
+                        <DropDownMenuItem @ref="updateAndExitItem" IconCss="bi bi-box-arrow-right" Text="Update and Exit"></DropDownMenuItem>
                         <DropDownMenuItem IconCss="bi bi-info-circle" Text="Details"></DropDownMenuItem>
                     </DropDownMenuItems>
                 </SfDropDownButton>                
@@ -29,6 +30,9 @@
 </div>
 
 @code {
+    DropDownMenuItem updateAndRestartItem;
+    DropDownMenuItem updateAndExitItem;
+
     protected override Task OnInitializedAsync()
     {
         _update.DownloadCompleted += (sender, args) =>
@@ -40,15 +44,27 @@
         return base.OnInitializedAsync();
     }
 
+    private void ItemSelected(MenuEventArgs args)
+    {
+        if (args.Item == updateAndRestartItem)
+        {
+            UpdateAndRestart();
+        }
+        else if (args.Item == updateAndExitItem)
+        {
+            UpdateAndExit();
+        }
+    }
+
     void UpdateAndRestart()
     {
-        _update.RequestUpdateAndRestart();
+        _update.UpdateAndRestart();
         _telemetry.TrackEvent("UpdateAndRestartClicked");
     }
 
     void UpdateAndExit()
     {
-        _update.RequestUpdateAndExit();
+        _update.UpdateAndExit();
         _telemetry.TrackEvent("UpdateAndExitClicked");
     }
 }
