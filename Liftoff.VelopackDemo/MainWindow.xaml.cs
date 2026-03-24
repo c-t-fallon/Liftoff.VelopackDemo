@@ -13,14 +13,14 @@ namespace Liftoff.VelopackDemo
     {
         IUpdateService _updateService;
 
-        public MainWindow(IUpdateService updateService)
+        public MainWindow(MainWindowViewModel viewModel, IUpdateService updateService)
         {
             _updateService = updateService;
 
             InitializeComponent();
+            DataContext = viewModel;
 
             Resources.Add("services", App.Host.Services);
-
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
         }
 

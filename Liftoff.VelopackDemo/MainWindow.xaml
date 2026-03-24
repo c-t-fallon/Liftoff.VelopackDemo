@@ -6,19 +6,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Liftoff.VelopackDemo"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
+    Title="{Binding Title}"
     Width="800"
     Height="450"
     mc:Ignorable="d"
     Closing="Window_Closing"
-    Loaded="Window_Loaded">
+    Loaded="Window_Loaded"
+    d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel, IsDesignTimeCreatable=False}">
     <Grid>
         <blazor:BlazorWebView
             x:Name="blazorWebView"
             HostPage="wwwroot\index.html"
             Services="{DynamicResource services}">
             <blazor:BlazorWebView.RootComponents>
-                <blazor:RootComponent ComponentType="{x:Type local:BlazorApp}" Selector="#app" />
+                <blazor:RootComponent ComponentType="{x:Type local:AppBlazor}" Selector="#app" />
             </blazor:BlazorWebView.RootComponents>
         </blazor:BlazorWebView>
     </Grid>

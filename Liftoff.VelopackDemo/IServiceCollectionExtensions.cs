@@ -19,6 +19,7 @@ namespace Liftoff.VelopackDemo
         public static IServiceCollection AddPresentationServices(this IServiceCollection services)
         {
             services.AddTransient<MainWindow>();
+            services.AddTransient<MainWindowViewModel>();
 
             return services;
         }
@@ -30,8 +31,8 @@ namespace Liftoff.VelopackDemo
                 options.ConnectionString = @"InstrumentationKey=e2303d4a-9c30-43f0-a93d-6a072be3a0ae;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=79475139-aabc-436d-9537-edb9b40c63c7";
             });
 
-            //services.AddProcessLogEnricher();
-            //services.AddLogEnricher<UserLogEnricher>();
+            services.AddProcessLogEnricher();
+            services.AddLogEnricher<UserLogEnricher>();
 
             return services;
         }
