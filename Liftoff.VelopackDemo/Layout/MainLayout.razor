@@ -10,14 +10,16 @@
 
     <main>
         <div class="top-row px-4">
-            <SfDropDownButton IconCss="bi bi-arrow-up-circle" Content="Update" CssClass="e-info">
-                <DropDownMenuItems>
-                    <DropDownMenuItem IconCss="bi bi-arrow-clockwise" Text="Update and Restart" onclick="@UpdateAndRestart"></DropDownMenuItem>
-                    <DropDownMenuItem IconCss="bi bi-box-arrow-right" Text="Update and Exit" onclick="@UpdateAndExit"></DropDownMenuItem>
-                    <DropDownMenuItem IconCss="bi bi-info-circle" Text="Details"></DropDownMenuItem>
-                </DropDownMenuItems>
-            </SfDropDownButton>
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            @if (_update.IsUpdateAvailable())
+            {
+                <SfDropDownButton IconCss="bi bi-arrow-up-circle" Content="Update" CssClass="e-info">
+                    <DropDownMenuItems>
+                        <DropDownMenuItem IconCss="bi bi-arrow-clockwise" Text="Update and Restart" onclick="@(() => UpdateAndRestart())"></DropDownMenuItem>
+                        <DropDownMenuItem IconCss="bi bi-box-arrow-right" Text="Update and Exit" onclick="@(() => UpdateAndExit())"></DropDownMenuItem>
+                        <DropDownMenuItem IconCss="bi bi-info-circle" Text="Details"></DropDownMenuItem>
+                    </DropDownMenuItems>
+                </SfDropDownButton>                
+            }
         </div>
 
         <article class="content px-4">
@@ -27,6 +29,17 @@
 </div>
 
 @code {
+    protected override Task OnInitializedAsync()
+    {
+        _update.DownloadCompleted += (sender, args) =>
+        {
+            _telemetry.TrackEvent("UpdateDownloadCompleted");
+            StateHasChanged();
+        };
+
+        return base.OnInitializedAsync();
+    }
+
     void UpdateAndRestart()
     {
         _update.UpdateAndRestart();

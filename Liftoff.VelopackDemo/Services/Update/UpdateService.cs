@@ -10,25 +10,6 @@ using Velopack.Sources;
 
 namespace Liftoff.VelopackDemo.Services.Update
 {
-    public interface IUpdateService
-    {
-        event EventHandler? DownloadStarted;
-
-        event EventHandler<DownloadProgressChangedEventArgs>? DownloadProgressChanged;
-
-        event EventHandler? DownloadCompleted;
-
-        Task CheckForUpdatesAndDownloadAsync();
-
-        bool IsUpdateAvailable();
-
-        void UpdateAndRestart();
-
-        void UpdateAndExit();
-
-        Task WaitExitThenApplyUpdatesAsync();
-    }
-
     public class UpdateService(ILogger<UpdateService> logger) : IUpdateService
     {
         private UpdateManager updateManager;
@@ -51,6 +32,7 @@ namespace Liftoff.VelopackDemo.Services.Update
             }
 
             await updateManager.DownloadUpdatesAsync(newVersion);
+            DownloadCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         public bool IsUpdateAvailable()
@@ -94,41 +76,6 @@ namespace Liftoff.VelopackDemo.Services.Update
         {
             var source = new GithubSource("https://github.com/c-t-fallon/Liftoff.VelopackDemo", null, false);
             return new UpdateManager(source);
-        }
-    }
-
-    public class DownloadProgressChangedEventArgs : EventArgs
-    {
-        public int PercentComplete { get; set; }
-    }
-
-    public class FakeUpdateService : IUpdateService
-    {
-        public event EventHandler? DownloadStarted;
-
-        public event EventHandler<DownloadProgressChangedEventArgs>? DownloadProgressChanged;
-
-        public event EventHandler? DownloadCompleted;
-
-        public async Task CheckForUpdatesAndDownloadAsync()
-        {
-        }
-
-        public bool IsUpdateAvailable()
-        {
-            return true;
-        }
-
-        public void UpdateAndRestart()
-        {
-        }
-
-        public void UpdateAndExit()
-        {
-        }
-
-        public async Task WaitExitThenApplyUpdatesAsync()
-        {
         }
     }
 }
