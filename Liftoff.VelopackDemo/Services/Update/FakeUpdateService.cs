@@ -10,6 +10,10 @@
 
         public event EventHandler? DownloadCompleted;
 
+        public event EventHandler? UpdateAndRestartRequested;
+
+        public event EventHandler? UpdateAndExitRequested;
+
         public async Task CheckForUpdatesAndDownloadAsync()
         {
             await Task.Delay(5000);
@@ -22,12 +26,24 @@
             return isUpdateAvailable;
         }
 
+        public void RequestUpdateAndRestart()
+        {
+            UpdateAndRestartRequested?.Invoke(this, EventArgs.Empty);
+        }
+
         public void UpdateAndRestart()
         {
+            throw new NotImplementedException();
+        }
+
+        public void RequestUpdateAndExit()
+        {
+            UpdateAndExitRequested?.Invoke(this, EventArgs.Empty);
         }
 
         public void UpdateAndExit()
         {
+            throw new NotImplementedException();
         }
 
         public async Task WaitExitThenApplyUpdatesAsync()

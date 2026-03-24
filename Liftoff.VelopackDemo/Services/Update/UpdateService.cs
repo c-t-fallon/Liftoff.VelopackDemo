@@ -21,6 +21,10 @@ namespace Liftoff.VelopackDemo.Services.Update
 
         public event EventHandler? DownloadCompleted;
 
+        public event EventHandler? UpdateAndRestartRequested;
+
+        public event EventHandler? UpdateAndExitRequested;
+
         public async Task CheckForUpdatesAndDownloadAsync()
         {
             updateManager = GetUpdateManager();
@@ -40,6 +44,16 @@ namespace Liftoff.VelopackDemo.Services.Update
             return newVersion != null;
         }
 
+        public void RequestUpdateAndRestart()
+        {
+            if (newVersion == null)
+            {
+                return;
+            }
+
+            UpdateAndRestartRequested?.Invoke(this, EventArgs.Empty);
+        }
+
         public void UpdateAndRestart()
         {
             if (newVersion == null)
@@ -49,6 +63,16 @@ namespace Liftoff.VelopackDemo.Services.Update
 
             updateManager.ApplyUpdatesAndRestart(newVersion);
             logger.LogInformation("Update applied, restarting application.");
+        }
+
+        public void RequestUpdateAndExit()
+        {
+            if (newVersion == null)
+            {
+                return;
+            }
+
+            UpdateAndExitRequested?.Invoke(this, EventArgs.Empty);
         }
 
         public void UpdateAndExit()

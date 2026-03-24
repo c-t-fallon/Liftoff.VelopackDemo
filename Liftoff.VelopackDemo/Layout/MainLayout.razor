@@ -42,13 +42,13 @@
 
     void UpdateAndRestart()
     {
-        _update.UpdateAndRestart();
+        _update.RequestUpdateAndRestart();
         _telemetry.TrackEvent("UpdateAndRestartClicked");
     }
 
     void UpdateAndExit()
     {
-        _update.UpdateAndExit();
+        _update.RequestUpdateAndExit();
         _telemetry.TrackEvent("UpdateAndExitClicked");
     }
 }

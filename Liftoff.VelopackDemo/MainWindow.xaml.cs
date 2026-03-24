@@ -22,6 +22,13 @@ namespace Liftoff.VelopackDemo
 
             Resources.Add("services", App.Host.Services);
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
+
+            _updateService.UpdateAndRestartRequested += _updateService_UpdateAndRestartRequested;
+        }
+
+        private void _updateService_UpdateAndRestartRequested(object? sender, EventArgs e)
+        {
+            _updateService.UpdateAndRestart();
         }
 
         private void BlazorWebView_BlazorWebViewInitialized(object? sender, BlazorWebViewInitializedEventArgs e)
