@@ -12,7 +12,7 @@ using Velopack.Sources;
 
 namespace Liftoff.VelopackDemo
 {
-    public partial class App : Application
+    public partial class WpfApp : Application
     {
         public static readonly IHost Host;
 
@@ -21,12 +21,12 @@ namespace Liftoff.VelopackDemo
         {
             VelopackApp.Build().Run();
 
-            var app = new App();
+            var app = new WpfApp();
             app.InitializeComponent();
             app.Run();
         }
 
-        static App()
+        static WpfApp()
         {
             var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder();
 
@@ -34,7 +34,7 @@ namespace Liftoff.VelopackDemo
             builder.Logging.SetMinimumLevel(LogLevel.Information);
 
             var config = new ConfigurationBuilder()
-                .AddUserSecrets<App>()
+                .AddUserSecrets<WpfApp>()
                 .Build();
 
             var syncfusionLicenseKey = BuildConstants.GetValue("SYNCFUSION_LICENSE_KEY") ?? config["Syncfusion:LicenseKey"];
@@ -51,7 +51,7 @@ namespace Liftoff.VelopackDemo
             Host = builder.Build();
         }
 
-        public App()
+        public WpfApp()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;

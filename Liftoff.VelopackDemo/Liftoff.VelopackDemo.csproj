@@ -7,25 +7,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	  <RootNamespace>Liftoff.VelopackDemo</RootNamespace>
+	  <StartupObject>Liftoff.VelopackDemo.WpfApp</StartupObject>
   </PropertyGroup>
 
 	<PropertyGroup>
-		<StartupObject>Liftoff.VelopackDemo.App</StartupObject>
 		<UserSecretsId>f9ef123e-1066-4288-98e6-e79017f51f8b</UserSecretsId>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <Compile Remove="Components\**" />
-	  <Content Remove="Components\**" />
-	  <EmbeddedResource Remove="Components\**" />
-	  <None Remove="Components\**" />
-	  <Page Remove="Components\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ApplicationDefinition Remove="App.xaml" />
-		<Page Include="App.xaml" />
-	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
@@ -53,10 +40,6 @@
     <Content Update="wwwroot\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\css\bootstrap\" />
   </ItemGroup>
 
 	<Target Name="InjectLicenseKey" BeforeTargets="BeforeBuild" Condition="'$(SYNCFUSION_LICENSE_KEY)' != ''">

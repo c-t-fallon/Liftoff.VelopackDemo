@@ -20,7 +20,7 @@ namespace Liftoff.VelopackDemo
             InitializeComponent();
             DataContext = viewModel;
 
-            Resources.Add("services", App.Host.Services);
+            Resources.Add("services", WpfApp.Host.Services);
             blazorWebView.BlazorWebViewInitialized += BlazorWebView_BlazorWebViewInitialized;
 
             _updateService.UpdateAndRestartRequested += _updateService_UpdateAndRestartRequested;

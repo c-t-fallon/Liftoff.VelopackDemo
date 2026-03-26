@@ -1,4 +1,5 @@
-﻿using Liftoff.VelopackDemo.Services.Update;
+﻿using Liftoff.VelopackDemo.Pages;
+using Liftoff.VelopackDemo.Services.Update;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.Enrichment;
 
@@ -20,6 +21,8 @@ namespace Liftoff.VelopackDemo
         {
             services.AddTransient<MainWindow>();
             services.AddTransient<MainWindowViewModel>();
+
+            services.AddScoped<CounterViewModel>();
 
             return services;
         }
