@@ -1,0 +1,168 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div style="position: relative; width: @Width; height: @Height;">
+    <button @onclick="ZoomToFit"
+            style="position: absolute; top: 12px; right: 12px; z-index: 10;
+                   padding: 6px 12px; background: #2d2d2d; color: #ccc;
+                   border: 1px solid #555; border-radius: 4px; cursor: pointer;
+                   font-size: 13px; font-family: monospace;"
+            title="Zoom to fit all elements">
+        ⊡ Zoom to Fit
+    </button>
+    <svg @ref="_svgRef"
+         viewBox="@ViewBox"
+         width="100%" height="100%"
+         style="background: #1e1e1e; cursor: @(_isPanning ? "grabbing" : "grab"); user-select: none;"
+         @onmousedown="OnMouseDown"
+         @onmousemove="OnMouseMove"
+         @onmouseup="OnMouseUp"
+         @onmouseleave="OnMouseLeave">
+        @foreach (var line in Lines)
+        {
+            <line x1="@line.X1" y1="@line.Y1" x2="@line.X2" y2="@line.Y2"
+                  stroke="@line.Stroke" stroke-width="@line.StrokeWidth" />
+        }
+        @foreach (var text in Texts)
+        {
+            @* <text x="@text.X" y="@text.Y" fill="@text.Fill" font-size="@text.FontSize"
+                  font-family="monospace">@text.Content</text> *@
+        }
+    </svg>
+</div>
+
+@code {
+    [Parameter] public string Width { get; set; } = "100%";
+    [Parameter] public string Height { get; set; } = "100%";
+    [Parameter] public List<DrawingLine> Lines { get; set; } = [];
+    [Parameter] public List<DrawingText> Texts { get; set; } = [];
+
+    private ElementReference _svgRef;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<DrawingViewer>? _dotnetRef;
+
+    private double _vbX = 0, _vbY = 0, _vbW = 800, _vbH = 600;
+    private double _elW = 800, _elH = 600;
+    private bool _isPanning = false;
+    private double _lastMouseX, _lastMouseY;
+
+    private string ViewBox =>
+        FormattableString.Invariant($"{_vbX:F4} {_vbY:F4} {_vbW:F4} {_vbH:F4}");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/svgViewer.js");
+            _dotnetRef = DotNetObjectReference.Create(this);
+            var size = await _module.InvokeAsync<double[]>("init", _svgRef, _dotnetRef);
+            _elW = size[0];
+            _elH = size[1];
+        }
+    }
+
+    private void ZoomToFit()
+    {
+        if (Lines.Count == 0 && Texts.Count == 0) return;
+
+        double minX = double.MaxValue, minY = double.MaxValue;
+        double maxX = double.MinValue, maxY = double.MinValue;
+
+        foreach (var l in Lines)
+        {
+            minX = Math.Min(minX, Math.Min(l.X1, l.X2));
+            minY = Math.Min(minY, Math.Min(l.Y1, l.Y2));
+            maxX = Math.Max(maxX, Math.Max(l.X1, l.X2));
+            maxY = Math.Max(maxY, Math.Max(l.Y1, l.Y2));
+        }
+        foreach (var t in Texts)
+        {
+            minX = Math.Min(minX, t.X);
+            minY = Math.Min(minY, t.Y);
+            maxX = Math.Max(maxX, t.X);
+            maxY = Math.Max(maxY, t.Y);
+        }
+
+        double drawW = maxX - minX;
+        double drawH = maxY - minY;
+
+        double padX = drawW * 0.05;
+        double padY = drawH * 0.05;
+        minX -= padX; maxX += padX;
+        minY -= padY; maxY += padY;
+        drawW = maxX - minX;
+        drawH = maxY - minY;
+
+        double elAspect = _elW / _elH;
+        double drawAspect = drawW / drawH;
+
+        if (drawAspect > elAspect)
+        {
+            double newH = drawW / elAspect;
+            _vbX = minX;
+            _vbW = drawW;
+            _vbY = minY - (newH - drawH) / 2;
+            _vbH = newH;
+        }
+        else
+        {
+            double newW = drawH * elAspect;
+            _vbY = minY;
+            _vbH = drawH;
+            _vbX = minX - (newW - drawW) / 2;
+            _vbW = newW;
+        }
+    }
+
+    private void OnMouseDown(MouseEventArgs e)
+    {
+        if (e.Button != 0) return;
+        _isPanning = true;
+        _lastMouseX = e.ClientX;
+        _lastMouseY = e.ClientY;
+    }
+
+    private void OnMouseMove(MouseEventArgs e)
+    {
+        if (!_isPanning) return;
+        double dx = e.ClientX - _lastMouseX;
+        double dy = e.ClientY - _lastMouseY;
+        _lastMouseX = e.ClientX;
+        _lastMouseY = e.ClientY;
+        _vbX -= dx / _elW * _vbW;
+        _vbY -= dy / _elH * _vbH;
+    }
+
+    private void OnMouseUp(MouseEventArgs e) => _isPanning = false;
+    private void OnMouseLeave(MouseEventArgs e) => _isPanning = false;
+
+    [JSInvokable]
+    public void HandleWheel(double deltaY, double offsetX, double offsetY, double elW, double elH)
+    {
+        _elW = elW;
+        _elH = elH;
+
+        const double ZoomFactor = 1.12;
+        double scale = deltaY > 0 ? ZoomFactor : 1.0 / ZoomFactor;
+
+        double cx = _vbX + offsetX / elW * _vbW;
+        double cy = _vbY + offsetY / elH * _vbH;
+
+        _vbW *= scale;
+        _vbH *= scale;
+        _vbX = cx - offsetX / elW * _vbW;
+        _vbY = cy - offsetY / elH * _vbH;
+
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.InvokeVoidAsync("dispose");
+            await _module.DisposeAsync();
+        }
+        _dotnetRef?.Dispose();
+    }
+}

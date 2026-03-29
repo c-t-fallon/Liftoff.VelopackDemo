@@ -1,11 +1,21 @@
-﻿@page "/viewsvg"
-<div style="width: 100%; height: calc(100vh - 4.6rem);">
-    <svg viewBox="0 0 100 100" width="100%" height="100%" style="background: green;">
-        <rect x="0" width="100" height="100" rx="15" />
-    </svg>
-</div>
+@page "/viewsvg"
 
+<DrawingViewer Width="100%" Height="calc(100vh - 5rem)" Lines="_lines" Texts="_texts" />
 
 @code {
+    private List<DrawingLine> _lines =
+    [
+        new DrawingLine(50,  50,  750, 50),
+        new DrawingLine(750, 50,  750, 550),
+        new DrawingLine(750, 550, 50,  550),
+        new DrawingLine(50,  550, 50,  50),
+        new DrawingLine(100, 150, 400, 400),
+        new DrawingLine(400, 150, 100, 400),
+    ];
 
+    private List<DrawingText> _texts =
+    [
+        new DrawingText(100, 100, "Drawing Viewer"),
+        new DrawingText(100, 480, "Lines: 6  |  Texts: 2"),
+    ];
 }
