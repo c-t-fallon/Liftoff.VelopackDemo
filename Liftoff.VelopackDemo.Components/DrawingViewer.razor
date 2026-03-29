@@ -1,0 +1,149 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div style="position: relative; width: @Width; height: @Height;">
+    <button @onclick="ZoomToFit"
+            style="position: absolute; top: 12px; right: 12px; z-index: 10;
+                   padding: 6px 12px; background: #2d2d2d; color: #ccc;
+                   border: 1px solid #555; border-radius: 4px; cursor: pointer;
+                   font-size: 13px; font-family: monospace;"
+            title="Zoom to fit all elements">
+        ⊡ Zoom to Fit
+    </button>
+    <svg @ref="_svgRef"
+         viewBox="@ViewBox"
+         preserveAspectRatio="none"
+         width="100%" height="100%"
+         style="background: #1e1e1e; user-select: none;">
+        @foreach (var line in Lines)
+        {
+            <line x1="@line.X1" y1="@line.Y1" x2="@line.X2" y2="@line.Y2"
+                  stroke="@line.Stroke" stroke-width="@line.StrokeWidth" />
+        }
+        @foreach (var text in Texts)
+        {
+            @SvgText(text)
+        }
+    </svg>
+</div>
+
+@code {
+    [Parameter] public string Width { get; set; } = "100%";
+    [Parameter] public string Height { get; set; } = "100%";
+    [Parameter] public List<DrawingLine> Lines { get; set; } = [];
+    [Parameter] public List<DrawingText> Texts { get; set; } = [];
+
+    private ElementReference _svgRef;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<DrawingViewer>? _dotnetRef;
+
+    // C# state — kept in sync by SyncViewBox; used for ZoomToFit and initial render
+    private double _vbX = 0, _vbY = 0, _vbW = 800, _vbH = 600;
+    private double _elW = 800, _elH = 600;
+
+    private string ViewBox =>
+        FormattableString.Invariant($"{_vbX:F4} {_vbY:F4} {_vbW:F4} {_vbH:F4}");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Liftoff.VelopackDemo.Components/DrawingViewer.razor.js");
+            _dotnetRef = DotNetObjectReference.Create(this);
+            var result = await _module.InvokeAsync<double[]>("init", _svgRef, _dotnetRef,
+                _vbX, _vbY, _vbW, _vbH);
+            _elW = result[0]; _elH = result[1];
+            _vbX = result[2]; _vbY = result[3]; _vbW = result[4]; _vbH = result[5];
+        }
+    }
+
+    // Called by JS after every pan/zoom gesture to keep C# state in sync.
+    // Does NOT call StateHasChanged — JS has already updated the DOM.
+    [JSInvokable]
+    public void SyncViewBox(double x, double y, double w, double h)
+    {
+        _vbX = x; _vbY = y; _vbW = w; _vbH = h;
+    }
+
+    [JSInvokable]
+    public async Task ZoomToFit()
+    {
+        if (Lines.Count == 0 && Texts.Count == 0) return;
+
+        if (_module is not null)
+        {
+            var size = await _module.InvokeAsync<double[]>("getElementSize");
+            _elW = size[0]; _elH = size[1];
+        }
+
+        double minX = double.MaxValue, minY = double.MaxValue;
+        double maxX = double.MinValue, maxY = double.MinValue;
+
+        foreach (var l in Lines)
+        {
+            minX = Math.Min(minX, Math.Min(l.X1, l.X2));
+            minY = Math.Min(minY, Math.Min(l.Y1, l.Y2));
+            maxX = Math.Max(maxX, Math.Max(l.X1, l.X2));
+            maxY = Math.Max(maxY, Math.Max(l.Y1, l.Y2));
+        }
+        foreach (var t in Texts)
+        {
+            minX = Math.Min(minX, t.X);
+            minY = Math.Min(minY, t.Y);
+            maxX = Math.Max(maxX, t.X);
+            maxY = Math.Max(maxY, t.Y);
+        }
+
+        double drawW = maxX - minX;
+        double drawH = maxY - minY;
+
+        double padX = drawW * 0.05;
+        double padY = drawH * 0.05;
+        minX -= padX; maxX += padX;
+        minY -= padY; maxY += padY;
+        drawW = maxX - minX;
+        drawH = maxY - minY;
+
+        double elAspect = _elW / _elH;
+        double drawAspect = drawW / drawH;
+
+        if (drawAspect > elAspect)
+        {
+            double newH = drawW / elAspect;
+            _vbX = minX;
+            _vbW = drawW;
+            _vbY = minY - (newH - drawH) / 2;
+            _vbH = newH;
+        }
+        else
+        {
+            double newW = drawH * elAspect;
+            _vbY = minY;
+            _vbH = drawH;
+            _vbX = minX - (newW - drawW) / 2;
+            _vbW = newW;
+        }
+
+        if (_module is not null)
+            await _module.InvokeVoidAsync("updateViewBox", _vbX, _vbY, _vbW, _vbH);
+    }
+
+    // <text> is a reserved Razor element, so SVG text must be emitted as MarkupString.
+    private static MarkupString SvgText(DrawingText t)
+    {
+        var content = System.Net.WebUtility.HtmlEncode(t.Content);
+        var fill    = System.Net.WebUtility.HtmlEncode(t.Fill);
+        return new MarkupString(FormattableString.Invariant(
+            $"<text x=\"{t.X:F4}\" y=\"{t.Y:F4}\" fill=\"{fill}\" font-size=\"{t.FontSize:F4}\" font-family=\"monospace\">{content}</text>"));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.InvokeVoidAsync("dispose");
+            await _module.DisposeAsync();
+        }
+        _dotnetRef?.Dispose();
+    }
+}
