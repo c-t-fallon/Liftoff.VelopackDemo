@@ -14,7 +14,7 @@
          viewBox="@ViewBox"
          preserveAspectRatio="none"
          width="100%" height="100%"
-         style="background: #1e1e1e; cursor: grab; user-select: none;">
+         style="background: #1e1e1e; user-select: none;">
         @foreach (var line in Lines)
         {
             <line x1="@line.X1" y1="@line.Y1" x2="@line.X2" y2="@line.Y2"
@@ -65,7 +65,8 @@
         _vbX = x; _vbY = y; _vbW = w; _vbH = h;
     }
 
-    private async Task ZoomToFit()
+    [JSInvokable]
+    public async Task ZoomToFit()
     {
         if (Lines.Count == 0 && Texts.Count == 0) return;
 

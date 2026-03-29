@@ -2,8 +2,13 @@ let _el = null;
 let _ref = null;
 
 let _vbX, _vbY, _vbW, _vbH;
+let _scaleStep = 0;
+let _refVbW, _refVbH;
 let _isPanning = false;
 let _lastX = 0, _lastY = 0;
+let _lastMiddleClickTime = 0;
+
+const _scalingConstant = 0.347; // e^0.347 ≈ 1.415, ~41% per tick (matches WPF feel)
 
 export function init(el, dotnetRef, vbX, vbY, vbW, vbH) {
     _el = el;
@@ -18,10 +23,14 @@ export function init(el, dotnetRef, vbX, vbY, vbW, vbH) {
     _vbH = vbW * (rect.height / rect.width);
     _vbY = (vbY + vbH / 2) - _vbH / 2; // keep vertical centre
 
+    _refVbW = _vbW;
+    _refVbH = _vbH;
+    _scaleStep = 0;
+
     applyViewBox();
 
     _el.addEventListener('wheel', handleWheel, { passive: false });
-    _el.addEventListener('mousedown', handleMouseDown);
+    _el.addEventListener('mousedown', handleMouseDown, { passive: false });
     _el.addEventListener('mousemove', handleMouseMove);
     _el.addEventListener('mouseup', handleMouseUp);
     _el.addEventListener('mouseleave', handleMouseUp);
@@ -42,6 +51,8 @@ export function dispose() {
 
 export function updateViewBox(vbX, vbY, vbW, vbH) {
     _vbX = vbX; _vbY = vbY; _vbW = vbW; _vbH = vbH;
+    _refVbW = vbW; _refVbH = vbH;
+    _scaleStep = 0;
     applyViewBox();
 }
 
@@ -55,7 +66,18 @@ function applyViewBox() {
 }
 
 function handleMouseDown(e) {
-    if (e.button !== 0) return;
+    if (e.button !== 1) return;
+    e.preventDefault(); // suppress browser auto-scroll on middle click
+
+    const now = Date.now();
+    const doubleClickThreshold = 300;
+    if (now - _lastMiddleClickTime < doubleClickThreshold) {
+        _lastMiddleClickTime = 0;
+        _ref.invokeMethodAsync('ZoomToFit');
+        return;
+    }
+    _lastMiddleClickTime = now;
+
     _isPanning = true;
     _lastX = e.clientX;
     _lastY = e.clientY;
@@ -73,9 +95,9 @@ function handleMouseMove(e) {
 }
 
 function handleMouseUp(e) {
-    if (!_isPanning) return;
+    if (!_isPanning || e.button !== 1) return;
     _isPanning = false;
-    _el.style.cursor = 'grab';
+    _el.style.cursor = '';
     _ref.invokeMethodAsync('SyncViewBox', _vbX, _vbY, _vbW, _vbH);
 }
 
@@ -85,16 +107,23 @@ function handleWheel(e) {
     const offsetX = e.clientX - rect.left;
     const offsetY = e.clientY - rect.top;
 
-    const zoomFactor = 1.12;
-    const scale = e.deltaY > 0 ? zoomFactor : 1.0 / zoomFactor;
-
+    // Cursor position in SVG space before zoom
     const cx = _vbX + offsetX / rect.width * _vbW;
     const cy = _vbY + offsetY / rect.height * _vbH;
 
-    _vbW *= scale;
-    _vbH *= scale;
-    _vbX = cx - offsetX / rect.width * _vbW;
-    _vbY = cy - offsetY / rect.height * _vbH;
+    // Integer step counter — drift-free, fully reversible
+    _scaleStep += e.deltaY < 0 ? 1 : -1;
+
+    // Compute viewBox size from step via exp (same math as WPF sandbox)
+    const zoomLevel = Math.exp(_scalingConstant * _scaleStep);
+    const newVbW = _refVbW / zoomLevel;
+    const newVbH = _refVbH / zoomLevel;
+
+    // Reposition so the cursor SVG point stays fixed on screen
+    _vbX = cx - offsetX / rect.width * newVbW;
+    _vbY = cy - offsetY / rect.height * newVbH;
+    _vbW = newVbW;
+    _vbH = newVbH;
 
     applyViewBox();
     _ref.invokeMethodAsync('SyncViewBox', _vbX, _vbY, _vbW, _vbH);
