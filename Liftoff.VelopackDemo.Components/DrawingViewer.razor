@@ -48,7 +48,7 @@
     {
         if (firstRender)
         {
-            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/svgViewer.js");
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Liftoff.VelopackDemo.Components/DrawingViewer.razor.js");
             _dotnetRef = DotNetObjectReference.Create(this);
             var result = await _module.InvokeAsync<double[]>("init", _svgRef, _dotnetRef,
                 _vbX, _vbY, _vbW, _vbH);

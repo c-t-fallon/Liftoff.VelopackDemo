@@ -20,10 +20,10 @@ export function init(el, dotnetRef, vbX, vbY, vbW, vbH) {
 
     applyViewBox();
 
-    _el.addEventListener('wheel',      handleWheel,     { passive: false });
-    _el.addEventListener('mousedown',  handleMouseDown);
-    _el.addEventListener('mousemove',  handleMouseMove);
-    _el.addEventListener('mouseup',    handleMouseUp);
+    _el.addEventListener('wheel', handleWheel, { passive: false });
+    _el.addEventListener('mousedown', handleMouseDown);
+    _el.addEventListener('mousemove', handleMouseMove);
+    _el.addEventListener('mouseup', handleMouseUp);
     _el.addEventListener('mouseleave', handleMouseUp);
 
     return [rect.width, rect.height, _vbX, _vbY, _vbW, _vbH];
@@ -31,10 +31,10 @@ export function init(el, dotnetRef, vbX, vbY, vbW, vbH) {
 
 export function dispose() {
     if (!_el) return;
-    _el.removeEventListener('wheel',      handleWheel);
-    _el.removeEventListener('mousedown',  handleMouseDown);
-    _el.removeEventListener('mousemove',  handleMouseMove);
-    _el.removeEventListener('mouseup',    handleMouseUp);
+    _el.removeEventListener('wheel', handleWheel);
+    _el.removeEventListener('mousedown', handleMouseDown);
+    _el.removeEventListener('mousemove', handleMouseMove);
+    _el.removeEventListener('mouseup', handleMouseUp);
     _el.removeEventListener('mouseleave', handleMouseUp);
     _el = null;
     _ref = null;
@@ -65,7 +65,7 @@ function handleMouseDown(e) {
 function handleMouseMove(e) {
     if (!_isPanning) return;
     const rect = _el.getBoundingClientRect();
-    _vbX -= (e.clientX - _lastX) / rect.width  * _vbW;
+    _vbX -= (e.clientX - _lastX) / rect.width * _vbW;
     _vbY -= (e.clientY - _lastY) / rect.height * _vbH;
     _lastX = e.clientX;
     _lastY = e.clientY;
@@ -88,12 +88,12 @@ function handleWheel(e) {
     const zoomFactor = 1.12;
     const scale = e.deltaY > 0 ? zoomFactor : 1.0 / zoomFactor;
 
-    const cx = _vbX + offsetX / rect.width  * _vbW;
+    const cx = _vbX + offsetX / rect.width * _vbW;
     const cy = _vbY + offsetY / rect.height * _vbH;
 
     _vbW *= scale;
     _vbH *= scale;
-    _vbX = cx - offsetX / rect.width  * _vbW;
+    _vbX = cx - offsetX / rect.width * _vbW;
     _vbY = cy - offsetY / rect.height * _vbH;
 
     applyViewBox();
