@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(curl -s \"https://cdn.jsdelivr.net/npm/konva@9/konva.min.js\" -o \"C:/repos/Liftoff.VelopackDemo/Liftoff.VelopackDemo.Components/wwwroot/konva.min.js\")",
+      "Bash(curl -sL \"https://cdn.jsdelivr.net/npm/konva@9/konva.esm.js\" -o \"C:/repos/Liftoff.VelopackDemo/Liftoff.VelopackDemo.Components/wwwroot/konva.esm.js\")",
+      "Bash(curl -sL \"https://cdn.jsdelivr.net/npm/konva@9/\")"
+    ]
+  }
+}

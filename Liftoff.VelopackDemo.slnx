@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Liftoff.VelopackDemo.Abstractions/Liftoff.VelopackDemo.Abstractions.csproj" Id="3ab93364-65ef-49eb-b76a-6d4edec577f6" />
   <Project Path="Liftoff.VelopackDemo.Components/Liftoff.VelopackDemo.Components.csproj" Id="819e9598-8505-4761-acbc-2bf6e2f435b5" />
+  <Project Path="Liftoff.VelopackDemo.WebApp/Liftoff.VelopackDemo.WebApp.csproj" Id="1646649c-e5ea-409b-91b6-5ed89679c16b" />
   <Project Path="Liftoff.VelopackDemo/Liftoff.VelopackDemo.csproj" />
 </Solution>
